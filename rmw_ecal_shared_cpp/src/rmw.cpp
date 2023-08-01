@@ -36,6 +36,8 @@
 #include "internal/guard_condition.hpp"
 #include "internal/graph.hpp"
 
+#include "fabric_rmw/fabric_functions.hpp"
+
 namespace eCAL
 {
   namespace rmw
@@ -348,6 +350,7 @@ namespace eCAL
         std::chrono::duration_cast<std::chrono::nanoseconds>(rcv_ts_ms).count();
       *taken = true;
 
+      fabric_functions::fabric_logger(message_info, subscription, "e-CAL");
       return RMW_RET_OK;
     }
 
