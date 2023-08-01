@@ -55,14 +55,15 @@ namespace eCAL
                                       type_support_->GetTypeDescriptor());
         publisher_.SetQOS(qos.ecal_qos);
         publisher_.SetAttribute("node_name", node_name);
-	publisher_.SetAttribute("node_namespace", node_namespace);
-	publisher_.AddEventCallback(eCAL_Publisher_Event::pub_event_dropped, std::bind(&Publisher::OnDataDropped, this, _1, _2));
+	      publisher_.SetAttribute("node_namespace", node_namespace);
+	      publisher_.AddEventCallback(eCAL_Publisher_Event::pub_event_dropped, std::bind(&Publisher::OnDataDropped, this, _1, _2));
       }
 
       void Publish(const void *data)
       {
         auto serialized_data = type_support_->Serialize(data);
-        publisher_.Send(serialized_data.data(), serialized_data.size());
+        auto publish_timestamp = eCAL::Time::GetNanoSeconds();
+        publisher_.Send(serialized_data.data(), serialized_data.size(), publish_timestamp);
       }
 
       void PublishRaw(const void *data, const size_t data_size)

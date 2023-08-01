@@ -25,6 +25,7 @@
 #include <rmw/impl/cpp/macros.hpp>
 
 #include "rmw_ecal_shared_cpp/string_functions.hpp"
+#include "rcutils/logging_macros.h"
 
 #include "internal/common.hpp"
 #include "internal/node.hpp"
@@ -323,11 +324,23 @@ namespace eCAL
       return RMW_RET_OK;
     }
 
-    rmw_ret_t rmw_take_with_info(const char *implementation_identifier,
-                                 const rmw_subscription_t *subscription,
-                                 void *ros_message,
-                                 bool *taken,
-                                 rmw_message_info_t *message_info,
+    static void log_timestamp_for_fabric(const rmw_message_info_t * message_info,
+                                         const rmw_subscription_t * subscription)
+    {
+      auto timestamp_diff = message_info->received_timestamp - message_info->source_timestamp;
+      std::string log_message = "Topic: " + std::string(subscription->topic_name) +
+        ", rmw xmt time ns: " + std::to_string(timestamp_diff) + ". RMWPUB TS: " +
+        std::to_string(message_info->source_timestamp) + ", RMWSUB TS: " +
+        std::to_string(message_info->received_timestamp);
+
+      RCUTILS_LOG_DEBUG_NAMED("rmw.ecal", log_message.c_str());
+    }
+
+    rmw_ret_t rmw_take_with_info(const char * implementation_identifier,
+                                 const rmw_subscription_t * subscription,
+                                 void * ros_message,
+                                 bool * taken,
+                                 rmw_message_info_t * message_info,
                                  rmw_subscription_allocation_t * /* allocation */)
     {
       RMW_CHECK_ARGUMENT_FOR_NULL(subscription, RMW_RET_INVALID_ARGUMENT);
@@ -336,8 +349,9 @@ namespace eCAL
       CHECK_RMW_IMPLEMENTATION(implementation_identifier, subscription);
 
       auto ecal_sub = GetImplementation(subscription);
-      if (!ecal_sub->HasData())
+      if (!ecal_sub->HasData()) {
         return RMW_RET_OK;
+      }
       auto ecal_msg_info = ecal_sub->TakeLatestDataWithInfo(ros_message);
       // eCAL timestamps are in microseconds but ROS expects them in nanoseconds
       std::chrono::microseconds src_ts_ms{ecal_msg_info.send_timestamp};
@@ -348,6 +362,7 @@ namespace eCAL
         std::chrono::duration_cast<std::chrono::nanoseconds>(rcv_ts_ms).count();
       *taken = true;
 
+      log_timestamp_for_fabric(message_info, subscription);
       return RMW_RET_OK;
     }
 
