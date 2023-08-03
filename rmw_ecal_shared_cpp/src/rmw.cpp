@@ -25,7 +25,6 @@
 #include <rmw/impl/cpp/macros.hpp>
 
 #include "rmw_ecal_shared_cpp/string_functions.hpp"
-#include "rcutils/logging_macros.h"
 
 #include "internal/common.hpp"
 #include "internal/node.hpp"
@@ -326,11 +325,11 @@ namespace eCAL
       return RMW_RET_OK;
     }
 
-    rmw_ret_t rmw_take_with_info(const char * implementation_identifier,
-                                 const rmw_subscription_t * subscription,
-                                 void * ros_message,
-                                 bool * taken,
-                                 rmw_message_info_t * message_info,
+    rmw_ret_t rmw_take_with_info(const char *implementation_identifier,
+                                 const rmw_subscription_t *subscription,
+                                 void *ros_message,
+                                 bool *taken,
+                                 rmw_message_info_t *message_info,
                                  rmw_subscription_allocation_t * /* allocation */)
     {
       RMW_CHECK_ARGUMENT_FOR_NULL(subscription, RMW_RET_INVALID_ARGUMENT);
@@ -339,9 +338,8 @@ namespace eCAL
       CHECK_RMW_IMPLEMENTATION(implementation_identifier, subscription);
 
       auto ecal_sub = GetImplementation(subscription);
-      if (!ecal_sub->HasData()) {
+      if (!ecal_sub->HasData())
         return RMW_RET_OK;
-      }
       auto ecal_msg_info = ecal_sub->TakeLatestDataWithInfo(ros_message);
       // eCAL timestamps are in microseconds but ROS expects them in nanoseconds
       std::chrono::microseconds src_ts_ms{ecal_msg_info.send_timestamp};
