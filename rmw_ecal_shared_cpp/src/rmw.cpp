@@ -350,8 +350,7 @@ namespace eCAL
         std::chrono::duration_cast<std::chrono::nanoseconds>(rcv_ts_ms).count();
       *taken = true;
 
-      fabric_functions::FabricLogger fabric_logger(message_info, subscription, "e-CAL");
-      fabric_logger.get_log();
+      fabric_functions::fabric_logger(message_info, subscription, "e-CAL");
       return RMW_RET_OK;
     }
 
