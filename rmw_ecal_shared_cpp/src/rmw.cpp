@@ -37,6 +37,8 @@
 #include "internal/guard_condition.hpp"
 #include "internal/graph.hpp"
 
+#include "fabric_rmw/fabric_functions.hpp"
+
 namespace eCAL
 {
   namespace rmw
@@ -324,18 +326,6 @@ namespace eCAL
       return RMW_RET_OK;
     }
 
-    static void log_timestamp_for_fabric(const rmw_message_info_t * message_info,
-                                         const rmw_subscription_t * subscription)
-    {
-      auto timestamp_diff = message_info->received_timestamp - message_info->source_timestamp;
-      std::string log_message = "Topic: " + std::string(subscription->topic_name) +
-        ", rmw xmt time ns: " + std::to_string(timestamp_diff) + ". RMWPUB TS: " +
-        std::to_string(message_info->source_timestamp) + ", RMWSUB TS: " +
-        std::to_string(message_info->received_timestamp);
-
-      RCUTILS_LOG_DEBUG_NAMED("rmw.ecal", log_message.c_str());
-    }
-
     rmw_ret_t rmw_take_with_info(const char * implementation_identifier,
                                  const rmw_subscription_t * subscription,
                                  void * ros_message,
@@ -362,7 +352,8 @@ namespace eCAL
         std::chrono::duration_cast<std::chrono::nanoseconds>(rcv_ts_ms).count();
       *taken = true;
 
-      log_timestamp_for_fabric(message_info, subscription);
+      fabric_functions::FabricLogger fabric_logger(message_info, subscription, "e-CAL");
+      fabric_logger.get_log();
       return RMW_RET_OK;
     }
 

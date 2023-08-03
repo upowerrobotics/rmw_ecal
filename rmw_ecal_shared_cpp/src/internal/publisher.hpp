@@ -62,8 +62,7 @@ namespace eCAL
       void Publish(const void *data)
       {
         auto serialized_data = type_support_->Serialize(data);
-        auto publish_timestamp = eCAL::Time::GetNanoSeconds();
-        publisher_.Send(serialized_data.data(), serialized_data.size(), publish_timestamp);
+        publisher_.Send(serialized_data.data(), serialized_data.size());
       }
 
       void PublishRaw(const void *data, const size_t data_size)
