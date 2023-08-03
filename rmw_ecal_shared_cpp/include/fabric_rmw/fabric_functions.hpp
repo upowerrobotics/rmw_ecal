@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef FABRIC_FUNCTION_HPP_
-#define FABRIC_FUNCTION_HPP_
+#ifndef FABRIC_RMW__FABRIC_FUNCTIONS_HPP_
+#define FABRIC_RMW__FABRIC_FUNCTIONS_HPP_
 
 #include "dds/dds.h"
 #include "rcutils/logging_macros.h"
@@ -44,4 +44,4 @@ public:
 
 }  // namespace fabric_functions
 
-#endif  // EXCEPTION_HPP_
+#endif  // FABRIC_RMW__FABRIC_FUNCTIONS_HPP_
