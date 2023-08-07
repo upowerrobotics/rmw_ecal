@@ -64,7 +64,6 @@ add_library(${PROJECT_NAME} SHARED
 	src/qos_profiles.cpp
 	src/rmw.cpp
 	src/features.cpp
-	src/fabric_functions.cpp
 )
 
 set(proto_files
